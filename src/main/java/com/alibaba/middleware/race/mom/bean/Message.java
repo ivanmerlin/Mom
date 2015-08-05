@@ -15,7 +15,7 @@ public class Message implements Serializable {
     private static final long serialVersionUID = 5295808332504208830L;
     private String topic;
     private byte[] body;
-    //È«¾ÖÎ¨Ò»µÄÏûÏ¢id£¬²»Í¬ÏûÏ¢²»ÄÜÖØ¸´
+    //å…¨å±€å”¯ä¸€çš„æ¶ˆæ¯idï¼Œä¸åŒæ¶ˆæ¯ä¸èƒ½é‡å¤
     private String msgId;
     private long bornTime;
 
@@ -46,7 +46,7 @@ public class Message implements Serializable {
         return properties.get(key);
     }
     /**
-     * ÉèÖÃÏûÏ¢ÊôĞÔ
+     * è®¾ç½®æ¶ˆæ¯å±æ€§
      * @param key
      * @param value
      */
@@ -54,7 +54,7 @@ public class Message implements Serializable {
         properties.put(key, value);
     }
     /**
-     * É¾³ıÏûÏ¢ÊôĞÔ
+     * åˆ é™¤æ¶ˆæ¯å±æ€§
      * @param key
      */
     public void removeProperty(String key) {

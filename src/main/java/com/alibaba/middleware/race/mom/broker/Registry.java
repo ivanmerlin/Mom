@@ -11,27 +11,25 @@ import java.util.*;
 public class Registry {
 
     /*
-    ĞèÒª¹ÜÀíµÄ£º
-    groupId ·Ö×é
-    Ã¿¸öÈËµÄmessageId
-    Ã¿¸öÓÃ»§µÄIP
-    ¸øÓÃ»§·ÖÅäÒ»¸öÎ¨Ò»µÄIP
-    °ó¶¨ÔÚÏûÏ¢ÖĞ¿©
+    éœ€è¦ç®¡ç†çš„ï¼š
+    groupId åˆ†ç»„
+    æ¯ä¸ªäººçš„messageId
+    æ¯ä¸ªç”¨æˆ·çš„IP
+    ç»™ç”¨æˆ·åˆ†é…ä¸€ä¸ªå”¯ä¸€çš„IP
+    ç»‘å®šåœ¨æ¶ˆæ¯ä¸­å’¯
     --------------------
-    Òª´¦ÀíÔİÊ±ÎŞ·¨·¢³öµÄÇé¿ö
-    ±£´æ·µ»ØµÄÏûÏ¢
-    µ±ÓÃ»§·´À¡ÊÕµ½Ê±É¾³ıËü
+    è¦å¤„ç†æš‚æ—¶æ— æ³•å‘å‡ºçš„æƒ…å†µ
+    ä¿å­˜è¿”å›çš„æ¶ˆæ¯
+    å½“ç”¨æˆ·åé¦ˆæ”¶åˆ°æ—¶åˆ é™¤å®ƒ
 
      */
-    static Map<String, Set<String>> topicMap;
-    static Map<String, GroupInfo> groupInfoMap;
+    static Map<String, Set<String>> topicMap=new HashMap<String, Set<String>>();
+    static Map<String, GroupInfo> groupInfoMap=new HashMap<String, GroupInfo>();
 
-    public Registry() {
-        topicMap = new HashMap<String, Set<String>>();
-    }
+
 
     /*
-    ÕâÀï¿ÉÒÔ×¨ÃÅ×öÒ»¸öDataObject beanMapper ¼õÉÙÊı¾İ±©Â¶
+    è¿™é‡Œå¯ä»¥ä¸“é—¨åšä¸€ä¸ªDataObject beanMapper å‡å°‘æ•°æ®æš´éœ²
      */
     public static void registerSubscriber(Message message) {
         String topic=message.getProperty("topic");

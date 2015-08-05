@@ -13,7 +13,7 @@ public class DefaultProducer implements Producer{
     String groupId;
     String topic;
     /**
-     * Æô¶¯Éú²úÕß£¬³õÊ¼»¯µ×²ã×ÊÔ´¡£ÔÚËùÓĞÊôĞÔÉèÖÃÍê±Ïºó£¬²ÅÄÜµ÷ÓÃÕâ¸ö·½·¨
+     * å¯åŠ¨ç”Ÿäº§è€…ï¼Œåˆå§‹åŒ–åº•å±‚èµ„æºã€‚åœ¨æ‰€æœ‰å±æ€§è®¾ç½®å®Œæ¯•åï¼Œæ‰èƒ½è°ƒç”¨è¿™ä¸ªæ–¹æ³•
      */
 
     public void start() {
@@ -22,21 +22,21 @@ public class DefaultProducer implements Producer{
         ProducerProxy.setBrokerIp(brokerIp);
     }
     /**
-     * ÉèÖÃÉú²úÕß¿É·¢ËÍµÄtopic
+     * è®¾ç½®ç”Ÿäº§è€…å¯å‘é€çš„topic
      * @param topic
      */
     public void setTopic(String topic) {
         this.topic=topic;
     }
     /**
-     * ÉèÖÃÉú²úÕßid£¬brokerÍ¨¹ıÕâ¸öidÀ´Ê¶±ğÉú²úÕß¼¯Èº
+     * è®¾ç½®ç”Ÿäº§è€…idï¼Œbrokeré€šè¿‡è¿™ä¸ªidæ¥è¯†åˆ«ç”Ÿäº§è€…é›†ç¾¤
      * @param groupId
      */
     public void setGroupId(String groupId) {
         this.groupId=groupId;
     }
     /**
-     * ·¢ËÍÏûÏ¢
+     * å‘é€æ¶ˆæ¯
      * @param message
      * @return
      */
@@ -46,7 +46,7 @@ public class DefaultProducer implements Producer{
         return ProducerProxy.sendMessage(message);
     }
     /**
-     * Òì²½callback·¢ËÍÏûÏ¢£¬µ±Ç°Ïß³Ì²»×èÈû¡£broker·µ»Øackºó£¬´¥·¢callback
+     * å¼‚æ­¥callbackå‘é€æ¶ˆæ¯ï¼Œå½“å‰çº¿ç¨‹ä¸é˜»å¡ã€‚brokerè¿”å›ackåï¼Œè§¦å‘callback
      * @param message
      * @param callback
      */
@@ -54,7 +54,7 @@ public class DefaultProducer implements Producer{
 
     }
     /**
-     * Í£Ö¹Éú²úÕß£¬Ïú»Ù×ÊÔ´
+     * åœæ­¢ç”Ÿäº§è€…ï¼Œé”€æ¯èµ„æº
      */
     public void stop() {
 

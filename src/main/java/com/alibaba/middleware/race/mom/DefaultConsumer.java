@@ -12,7 +12,7 @@ import test.TestThread;
 public class DefaultConsumer implements Consumer {
 
     /**
-     * Æô¶¯Ïû·ÑÕß£¬³õÊ¼»¯µ×²ã×ÊÔ´¡£ÒªÔÚÊôĞÔÉèÖÃºÍ¶©ÔÄ²Ù×÷·¢ÆğÖ®ºóÖ´ĞĞ
+     * å¯åŠ¨æ¶ˆè´¹è€…ï¼Œåˆå§‹åŒ–åº•å±‚èµ„æºã€‚è¦åœ¨å±æ€§è®¾ç½®å’Œè®¢é˜…æ“ä½œå‘èµ·ä¹‹åæ‰§è¡Œ
      */
     String topic;
     String groupId;
@@ -27,17 +27,17 @@ public class DefaultConsumer implements Consumer {
     }
 
     /**
-     * ·¢Æğ¶©ÔÄ²Ù×÷
+     * å‘èµ·è®¢é˜…æ“ä½œ
      *
-     * @param topic    Ö»½ÓÊÜ¸ÃtopicµÄÏûÏ¢
-     * @param filter   ÊôĞÔ¹ıÂËÌõ¼ş£¬ÀıÈç area=hz£¬±íÊ¾Ö»½ÓÊÜareaÊôĞÔÎªhzµÄÏûÏ¢¡£ÏûÏ¢µÄ¹ıÂËÒªÔÚ·şÎñ¶Ë½øĞĞ
+     * @param topic    åªæ¥å—è¯¥topicçš„æ¶ˆæ¯
+     * @param filter   å±æ€§è¿‡æ»¤æ¡ä»¶ï¼Œä¾‹å¦‚ area=hzï¼Œè¡¨ç¤ºåªæ¥å—areaå±æ€§ä¸ºhzçš„æ¶ˆæ¯ã€‚æ¶ˆæ¯çš„è¿‡æ»¤è¦åœ¨æœåŠ¡ç«¯è¿›è¡Œ
      * @param listener
      */
     public void subscribe(String topic, String filter, MessageListener listener) {
         Message message = new Message();
         message.setProperty("topic", topic);
         /*
-        ÉèÖÃfilter
+        è®¾ç½®filter
          */
         if(StringUtils.isNotBlank(filter)){
             String[] conditions=filter.split("=");
@@ -51,7 +51,7 @@ public class DefaultConsumer implements Consumer {
     }
 
     /**
-     * ÉèÖÃÏû·ÑÕß×éid£¬brokerÍ¨¹ıÕâ¸öidÀ´Ê¶±ğÏû·ÑÕß»úÆ÷
+     * è®¾ç½®æ¶ˆè´¹è€…ç»„idï¼Œbrokeré€šè¿‡è¿™ä¸ªidæ¥è¯†åˆ«æ¶ˆè´¹è€…æœºå™¨
      *
      * @param groupId
      */
@@ -60,7 +60,7 @@ public class DefaultConsumer implements Consumer {
     }
 
     /**
-     * Í£Ö¹Ïû·ÑÕß£¬broker²»ÔÙÍ¶µİÏûÏ¢¸ø´ËÏû·ÑÕß»úÆ÷¡£
+     * åœæ­¢æ¶ˆè´¹è€…ï¼Œbrokerä¸å†æŠ•é€’æ¶ˆæ¯ç»™æ­¤æ¶ˆè´¹è€…æœºå™¨ã€‚
      */
     public void stop() {
         Message message=new Message();
@@ -72,7 +72,7 @@ public class DefaultConsumer implements Consumer {
 
 
         TestThread thread = new TestThread();
-        final int length=1;
+        final int length=5;
         Thread[] ts=new Thread[length];
         for(int i=0;i<length;i++){
             Thread t=new Thread(thread);
