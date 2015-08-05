@@ -11,10 +11,10 @@ public class SendResult {
     public void setInfo(String info) {
         this.info = info;
     }
-    public com.alibaba.middleware.race.mom.enums.SendStatus getStatus() {
+    public enums.SendStatus getStatus() {
         return status;
     }
-    public void setStatus(com.alibaba.middleware.race.mom.enums.SendStatus status) {
+    public void setStatus(enums.SendStatus status) {
         this.status = status;
     }
     public String getMsgId() {
@@ -24,11 +24,11 @@ public class SendResult {
         this.msgId = msgId;
     }
     private String info;
-    private com.alibaba.middleware.race.mom.enums.SendStatus status;
+    private enums.SendStatus status;
     private String msgId;
     @Override
     public String toString(){
-        return "msg "+msgId+"  send "+(status== com.alibaba.middleware.race.mom.enums.SendStatus.SUCCESS?"success":"fail")+"   info:"+info;
+        return "msg "+msgId+"  send "+(status== enums.SendStatus.SUCCESS?"success":"fail")+"   info:"+info;
     }
 
 }

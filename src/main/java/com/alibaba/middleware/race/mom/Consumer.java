@@ -7,6 +7,7 @@ import com.alibaba.middleware.race.mom.service.MessageListener;
  */
 
 public interface Consumer {
+
     /**
      * 启动消费者，初始化底层资源。要在属性设置和订阅操作发起之后执行
      */

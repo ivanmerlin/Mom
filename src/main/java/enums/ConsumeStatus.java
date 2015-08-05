@@ -1,4 +1,4 @@
-package com.alibaba.middleware.race.mom.enums;
+package enums;
 
 /**
  * Created by ivan.wang on 2015/8/5.
