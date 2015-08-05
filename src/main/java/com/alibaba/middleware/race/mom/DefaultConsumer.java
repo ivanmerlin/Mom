@@ -20,7 +20,6 @@ public class DefaultConsumer implements Consumer {
     MessageListener listener;
 
     public void start() {
-        setGroupId("consumer");
 //        String brokerIp=System.getProperty("SIP");
         String brokerIp = "127.0.0.1";
         ConsumerProxy.setBrokerIp(brokerIp);
@@ -46,7 +45,7 @@ public class DefaultConsumer implements Consumer {
                 message.setProperty(conditions[0],conditions[1]);
             }
         }
-        message.setProperty("listener", listener.getClass().getName());
+        message.setProperty("groupId",groupId);
         message.setProperty("function", "consumerSubscribe");
         ConsumerProxy.sendMessage(message);
     }

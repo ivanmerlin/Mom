@@ -14,6 +14,7 @@ import java.net.Socket;
 public class ConsumerProxy {
     public static final int PORT = 12345;
     static String brokerIp;
+    public static final String TYPE="consumer";
     public static boolean sendMessage(Message message){
         message=preProcessMsg(message);
         Socket socket = null;
@@ -39,10 +40,12 @@ public class ConsumerProxy {
         /*
         ¥¶¿Ìmessageƒ⁄»›—Ω
          */
-
+        message.setProperty("type",TYPE);
         return message;
     }
     public static void setBrokerIp(String brokerIp) {
         ConsumerProxy.brokerIp = brokerIp;
     }
+
+
 }

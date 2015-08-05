@@ -7,14 +7,14 @@ import com.alibaba.middleware.race.mom.bean.Message;
  */
 public class MessageDispatcher {
 
-   public static Message dispatch(Message message){
+   public static void dispatch(Message message){
       String function=message.getProperty("function");
        if(function.equals("consumerSubscribe")){
-           return MessageProcessor.consumerSubscribe(message);
+           MessageProcessor.consumerSubscribe(message);
        }else if(function.equals("consumerStop")){
-           return MessageProcessor.consumerStop(message);
+           MessageProcessor.consumerStop(message);
        }
-       return null;
+
    }
 
 

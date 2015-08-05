@@ -1,10 +1,12 @@
 package com.alibaba.middleware.race.mom.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by ivan.wang on 2015/8/5.
  */
 
-public class SendResult {
+public class SendResult implements Serializable{
     public String getInfo() {
         return info;
     }
