@@ -1,6 +1,7 @@
 package com.alibaba.middleware.race.mom.utils;
 
-import com.alibaba.middleware.race.mom.bean.Message;
+
+import com.alibaba.middleware.race.mom.Message;
 
 /**
  * Created by ivan.wang on 2015/8/5.

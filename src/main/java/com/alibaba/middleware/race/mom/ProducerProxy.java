@@ -1,8 +1,5 @@
 package com.alibaba.middleware.race.mom;
 
-import com.alibaba.middleware.race.mom.bean.Message;
-import com.alibaba.middleware.race.mom.bean.SendResult;
-import enums.SendStatus;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

@@ -1,15 +1,13 @@
 package com.alibaba.middleware.race.mom;
 
-import com.alibaba.middleware.race.mom.bean.Message;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
  * Created by ivan.wang on 2015/8/5.
- * ÕâÀï¸ºÔğÓëbrokerµÄÁªÏµ ¾ßÌåÍøÂç ·¢ËÍÇëÇó
+ * ï¿½ï¿½ï¿½ï¸ºï¿½ï¿½ï¿½ï¿½brokerï¿½ï¿½ï¿½ï¿½Ïµ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 public class ConsumerProxy {
     public static final int PORT = 12345;
@@ -38,7 +36,7 @@ public class ConsumerProxy {
     public static Message preProcessMsg(Message message){
 
         /*
-        ´¦ÀímessageÄÚÈİÑ½
+        ï¿½ï¿½ï¿½ï¿½messageï¿½ï¿½ï¿½ï¿½Ñ½
          */
         message.setProperty("type",TYPE);
         return message;

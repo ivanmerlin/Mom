@@ -1,8 +1,8 @@
 package com.alibaba.middleware.race.mom.broker;
 
-import com.alibaba.middleware.race.mom.bean.Message;
 
-import java.net.Socket;
+import com.alibaba.middleware.race.mom.Message;
+
 import java.util.*;
 
 /**

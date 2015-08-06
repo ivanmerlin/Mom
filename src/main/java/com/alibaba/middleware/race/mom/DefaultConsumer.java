@@ -1,8 +1,5 @@
 package com.alibaba.middleware.race.mom;
 
-import com.alibaba.middleware.race.mom.bean.ConsumeResult;
-import com.alibaba.middleware.race.mom.bean.Message;
-import com.alibaba.middleware.race.mom.service.MessageListener;
 import com.alibaba.middleware.race.mom.utils.StringUtils;
 import test.TestThread;
 
@@ -26,18 +23,12 @@ public class DefaultConsumer implements Consumer {
 
     }
 
-    /**
-     * 发起订阅操作
-     *
-     * @param topic    只接受该topic的消息
-     * @param filter   属性过滤条件，例如 area=hz，表示只接受area属性为hz的消息。消息的过滤要在服务端进行
-     * @param listener
-     */
-    public void subscribe(String topic, String filter, MessageListener listener) {
+    @Override
+    public void subscribe(String topic, String filter, com.alibaba.middleware.race.mom.MessageListener listener) {
         Message message = new Message();
         message.setProperty("topic", topic);
         /*
-        设置filter
+        璁剧疆filter
          */
         if(StringUtils.isNotBlank(filter)){
             String[] conditions=filter.split("=");
@@ -51,7 +42,17 @@ public class DefaultConsumer implements Consumer {
     }
 
     /**
-     * 设置消费者组id，broker通过这个id来识别消费者机器
+     * 发起订阅操作
+     *
+     * @param topic
+     *            只接受该topic的消息
+     * @param filter
+     *            属性过滤条件，例如 area=hz，表示只接受area属性为hz的消息。消息的过滤要在服务端进行
+     * @param listener
+     */
+
+    /**
+     * 璁剧疆娑堣垂鑰呯粍id锛宐roker閫氳繃杩欎釜id鏉ヨ瘑鍒秷璐硅�呮満鍣�
      *
      * @param groupId
      */
@@ -60,7 +61,7 @@ public class DefaultConsumer implements Consumer {
     }
 
     /**
-     * 停止消费者，broker不再投递消息给此消费者机器。
+     * 鍋滄娑堣垂鑰咃紝broker涓嶅啀鎶曢�掓秷鎭粰姝ゆ秷璐硅�呮満鍣ㄣ��
      */
     public void stop() {
         Message message=new Message();

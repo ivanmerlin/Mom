@@ -1,9 +1,10 @@
 package com.alibaba.middleware.race.mom.broker;
 
-import com.alibaba.middleware.race.mom.bean.Message;
-import com.alibaba.middleware.race.mom.bean.SendResult;
+
+import com.alibaba.middleware.race.mom.Message;
+import com.alibaba.middleware.race.mom.SendResult;
+import com.alibaba.middleware.race.mom.SendStatus;
 import com.alibaba.middleware.race.mom.utils.MessageDispatcher;
-import enums.SendStatus;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

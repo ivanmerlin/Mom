@@ -1,9 +1,5 @@
 package com.alibaba.middleware.race.mom;
 
-import com.alibaba.middleware.race.mom.bean.Message;
-import com.alibaba.middleware.race.mom.bean.SendResult;
-import com.alibaba.middleware.race.mom.service.SendCallback;
-import enums.SendStatus;
 
 /**
  * Created by ivan.wang on 2015/8/5.
