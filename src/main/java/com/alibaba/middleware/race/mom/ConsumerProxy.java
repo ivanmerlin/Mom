@@ -10,7 +10,8 @@ import java.net.Socket;
  * ���︺����broker����ϵ �������� ��������
  */
 public class ConsumerProxy {
-    public static final int PORT = 12345;
+    public static final int PORT = 9999;
+    public static final int LISTEN_PORT = 9999;
     static String brokerIp;
     public static final String TYPE="consumer";
     public static boolean sendMessage(Message message){
@@ -19,6 +20,9 @@ public class ConsumerProxy {
         try {
             socket = new Socket(brokerIp,PORT);
             System.out.println("connect to server");
+            /*
+            考虑优化：传输处理过的信息 不使用java的序列化
+             */
             ObjectOutputStream out=new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(message);
             out.close();

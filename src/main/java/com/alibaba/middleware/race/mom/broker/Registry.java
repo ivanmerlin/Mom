@@ -23,8 +23,8 @@ public class Registry {
     当用户反馈收到时删除它
 
      */
-    static Map<String, Set<String>> topicMap=new HashMap<String, Set<String>>();
-    static Map<String, GroupInfo> groupInfoMap=new HashMap<String, GroupInfo>();
+    public static Map<String, Set<String>> topicMap=new HashMap<String, Set<String>>();
+    public static Map<String, GroupInfo> groupInfoMap=new HashMap<String, GroupInfo>();
 
 
 

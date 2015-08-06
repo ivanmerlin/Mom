@@ -12,7 +12,7 @@ import java.net.Socket;
 public class ProducerProxy {
     private static String brokerIp;
     public static final String TYPE="producer";
-    public static final int PORT = 12345;
+    public static final int PORT = 9999;
 
     public static void setBrokerIp(String brokerIp) {
         ProducerProxy.brokerIp = brokerIp;

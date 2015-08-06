@@ -1,6 +1,8 @@
 package com.alibaba.middleware.race.mom.broker;
 
 
+import com.alibaba.middleware.race.mom.broker.thread.ListenThread;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -39,7 +41,7 @@ import java.net.Socket;
  * 的ack，那么还得尽快给C重新投递；如果在10秒内还没收到C的ack，那么认为消费失败，后面还得尽快重新投递给C。
  */
 public class Broker {
-    private static final int PORT = 12345;
+    private static final int PORT = 9999;
     int connectNum;
     public Broker() {
 

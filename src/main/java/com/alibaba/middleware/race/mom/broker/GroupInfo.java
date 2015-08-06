@@ -11,6 +11,15 @@ public class GroupInfo {
     private Set<String> topicSet;
     private String hostAddress;
     private String condition;
+    private String hostPort;
+
+    public String getHostPort() {
+        return hostPort;
+    }
+
+    public void setHostPort(String hostPort) {
+        this.hostPort = hostPort;
+    }
 
     public String getGroupId() {
         return groupId;

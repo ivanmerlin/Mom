@@ -1,6 +1,7 @@
 package com.alibaba.middleware.race.mom.utils;
 
 import com.alibaba.middleware.race.mom.Message;
+import com.alibaba.middleware.race.mom.broker.MessageCenter;
 import com.alibaba.middleware.race.mom.broker.Registry;
 
 /**
@@ -18,5 +19,14 @@ public class MessageProcessor {
         Registry.stopSubscribe(message.getProperty("groupId"));
     }
 
+    public static void producerPublish(Message message){
+        System.out.println("producer publish a message");
+        MessageCenter.add(message);
+    }
+
+    public static void producerStop(Message message){
+        System.out.println("producer stop sending message");
+
+    }
 
 }
