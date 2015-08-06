@@ -9,6 +9,9 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -84,10 +87,13 @@ public class Broker {
                     .localAddress(PORT).childHandler(new ChannelInitializer<Channel>() {
                 @Override
                 protected void initChannel(Channel channel) throws Exception {
-
+                    /**添加Object解码器*/
+                    channel.pipeline().addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())),new ObjectEncoder());
+                    /**添加对消息处理的Handler*/
+                    channel.pipeline().addLast(new MomServerHandler());
                 }
             });
-
+            /**开启服务和关闭服务*/
             ChannelFuture channelFuture = serverBootstrap.bind().sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
@@ -98,7 +104,6 @@ public class Broker {
         }
 
     }
-
 
     public static void main(String[] args) {
         Broker broker=new Broker();

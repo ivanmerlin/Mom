@@ -13,7 +13,9 @@ public class MomServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         /**如果接收到的是一个Message*/
         if(msg instanceof Message){
+            System.out.println("Get a new Message!");
 
+            //TODO 当收到一条信息以后开启一条新的线程去处理？
         }
     }
 
