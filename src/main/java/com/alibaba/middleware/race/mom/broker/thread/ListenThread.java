@@ -36,7 +36,6 @@ public class ListenThread extends Thread{
                 SendResult result=new SendResult();
                 ObjectOutputStream out=new ObjectOutputStream(socket.getOutputStream());
                 System.out.println("message = " + message.getBody().toString());
-
                 result.setStatus(SendStatus.SUCCESS);
                 //generate a message Id
                 result.setMsgId(message.getMsgId());

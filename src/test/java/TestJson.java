@@ -20,8 +20,7 @@ public class TestJson {
         long startTime=System.currentTimeMillis();   //获取开始时间
         long endTime=System.currentTimeMillis(); //获取结束时间
         System.out.println("使用jackson程序运行时间： "+(endTime-startTime)+"ms");
-
-         startTime=System.currentTimeMillis();   //获取开始时间
+        startTime=System.currentTimeMillis();   //获取开始时间
 
          endTime=System.currentTimeMillis(); //获取结束时间
         System.out.println("使用json程序运行时间： "+(endTime-startTime)+"ms");
