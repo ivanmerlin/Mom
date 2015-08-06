@@ -2,6 +2,13 @@ package com.alibaba.middleware.race.mom.broker;
 
 
 import com.alibaba.middleware.race.mom.broker.thread.ListenThread;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -48,27 +55,48 @@ public class Broker {
     }
 
     public void start(){
-        ServerSocket server= null;
-        connectNum=0;
-        try {
-            server = new ServerSocket(PORT);
-        } catch (IOException e) {
+//        ServerSocket server= null;
+//        connectNum=0;
+//        try {
+//            server = new ServerSocket(PORT);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        while(true){
+//            try {
+//
+//                System.out.println("start server");
+//                final Socket socket=server.accept();
+//                connectNum++;
+//                System.out.println("get a connection");
+//                new ListenThread(socket).start();
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try{
+            ServerBootstrap serverBootstrap = new ServerBootstrap();
+            serverBootstrap.group(bossGroup,workerGroup).channel(NioServerSocketChannel.class)
+                    .localAddress(PORT).childHandler(new ChannelInitializer<Channel>() {
+                @Override
+                protected void initChannel(Channel channel) throws Exception {
+
+                }
+            });
+
+            ChannelFuture channelFuture = serverBootstrap.bind().sync();
+            channelFuture.channel().closeFuture().sync();
+        } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
-        while(true){
-            try {
 
-                System.out.println("start server");
-                final Socket socket=server.accept();
-                connectNum++;
-                System.out.println("get a connection");
-                new ListenThread(socket).start();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
     }
 
 
