@@ -1,6 +1,8 @@
 package com.alibaba.middleware.race.mom;
 
+import com.alibaba.middleware.race.mom.Message;
 import com.alibaba.middleware.race.mom.broker.MessageThread;
+import com.alibaba.middleware.race.mom.utils.NetStreamUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,20 +25,10 @@ public class ConsumerListenThread extends Thread{
     @Override
     public void run() {
         while (keep){
-            try {
-                ObjectInputStream input=new ObjectInputStream(socket.getInputStream());
-                Message m= (Message) input.readObject();
-                ObjectOutputStream output=new ObjectOutputStream(socket.getOutputStream());
-                output.writeUTF(ACK_MESSAGE);
-                output.flush();
-                //不确定可不可以关掉流
-                input.close();
-                output.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+                NetStreamUtils netUtils=new NetStreamUtils(socket);
+                Message m= (Message) netUtils.readObject();
+                netUtils.writeString(ACK_MESSAGE);
+            System.out.println("MsgId:"+m.getMsgId()+"topic:"+m.getTopic()+" "+m.getBody());
         }
 
     }

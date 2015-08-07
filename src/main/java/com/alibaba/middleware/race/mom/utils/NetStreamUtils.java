@@ -32,6 +32,7 @@ public class NetStreamUtils {
     public void writeObject(Object object) {
         try {
             output.writeObject(object);
+            output.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,10 +53,22 @@ public class NetStreamUtils {
     public void writeString(String str) {
         try {
             output.writeUTF(str);
+            output.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public Object readObject(){
+
+        try {
+            return input.readObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

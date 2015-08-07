@@ -5,6 +5,7 @@ import com.alibaba.middleware.race.mom.Message;
 import com.alibaba.middleware.race.mom.SendResult;
 import com.alibaba.middleware.race.mom.SendStatus;
 import com.alibaba.middleware.race.mom.utils.MessageDispatcher;
+import com.alibaba.middleware.race.mom.utils.NetStreamUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -26,34 +27,22 @@ public class ListenThread extends Thread{
     @Override
     public void run() {
         try {
-            ObjectInputStream in=new ObjectInputStream(socket.getInputStream());
+            System.out.println("start listen thread");
+            NetStreamUtils netUtils=new NetStreamUtils(socket);
             Message message= null;
-            message = (Message) in.readObject();
+            message = (Message) netUtils.readObject();
             System.out.println("message=" + message.getProperty("function"));
             if(message.getProperty("type").equals(CONSUMER_TYPE)){
-                MessageDispatcher.dispatch(message);
+                MessageDispatcher.dispatch(message,socket);
             }else if(message.getProperty("type").equals(PRODUCER_TYPE)){
-                SendResult result=new SendResult();
-                ObjectOutputStream out=new ObjectOutputStream(socket.getOutputStream());
                 System.out.println("message = " + message.getBody().toString());
-                result.setStatus(SendStatus.SUCCESS);
                 //generate a message Id
-                result.setMsgId(message.getMsgId());
-                out.writeObject(result);
-                out.flush();
+
             }
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } finally {
+
         }
     }
 }

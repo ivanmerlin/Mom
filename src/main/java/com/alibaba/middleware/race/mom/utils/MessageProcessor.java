@@ -4,15 +4,17 @@ import com.alibaba.middleware.race.mom.Message;
 import com.alibaba.middleware.race.mom.broker.MessageCenter;
 import com.alibaba.middleware.race.mom.broker.Registry;
 
+import java.net.Socket;
+
 /**
  * Created by ivan.wang on 2015/8/5.
  */
 public class MessageProcessor {
 
 
-    public static void consumerSubscribe(Message message){
+    public static void consumerSubscribe(Message message,Socket socket){
         System.out.println("invoke consumerSubscribe()");
-        Registry.registerSubscriber(message);
+        Registry.registerSubscriber(message,socket);
     }
     public static void consumerStop(Message message){
         System.out.println("invoke consumerStop()");

@@ -35,6 +35,8 @@ public class Registry {
     public static void registerSubscriber(Message message,Socket socket) {
         String topic=message.getProperty("topic");
         String groupId=message.getProperty("groupId");
+        System.out.println("groupId = " + groupId);
+        System.out.println("topic = " + topic);
         /*
             将用户加到对应topic的订阅列表中。
          */
@@ -54,7 +56,24 @@ public class Registry {
             info.addTopic(topic);
             info.setGroupId(groupId);
             info.setCondition(message.getProperty("condition"));
+            groupInfoMap.put(groupId,info);
         }
+        System.out.println("groupInfoMap.size() = " + groupInfoMap.size());
+        for(Map.Entry<String,Set<String>> entry:topicMap.entrySet()){
+            String theTopic=entry.getKey();
+            System.out.println("theTopic = " + theTopic);
+            Set<String> subSet=entry.getValue();
+            for(String groupid:subSet){
+                System.out.println("groupid = " + groupid);
+            }
+        }
+        for(Map.Entry<String,GroupInfo> entry:groupInfoMap.entrySet()){
+            String groupid=entry.getKey();
+            System.out.println("groupid = " + groupid);
+            String condition=entry.getValue().getCondition();
+            System.out.println("condition = " + condition);
+        }
+
     }
     public static void stopSubscribe(String groupId) {
         Set set=groupInfoMap.get(groupId).getTopicSet();

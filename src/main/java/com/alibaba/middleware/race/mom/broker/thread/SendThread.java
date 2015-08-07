@@ -14,6 +14,7 @@ import java.net.SocketTimeoutException;
 
 /**
  * Created by ivan.wang on 2015/8/6.
+ * 具体用来发送的线程
  */
 public class SendThread extends Thread {
     Message message;
@@ -31,6 +32,9 @@ public class SendThread extends Thread {
         NetStreamUtils netUtil = new NetStreamUtils(socket);
         /*
             没有想好在哪里保存到本地
+         */
+        /*
+        在接受到成功回执前不停发送
          */
         String result = send(netUtil);
         while (result == null) {

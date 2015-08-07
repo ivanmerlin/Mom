@@ -1,26 +1,28 @@
 package test;
 
-import com.alibaba.middleware.race.mom.ConsumeResult;
-import com.alibaba.middleware.race.mom.DefaultConsumer;
-import com.alibaba.middleware.race.mom.Message;
-import com.alibaba.middleware.race.mom.MessageListener;
+import com.alibaba.middleware.race.mom.*;
 
 /**
  * Created by ivan.wang on 2015/8/5.
  */
-public class TestThread implements Runnable{
+public class TestThread extends Thread{
     MessageListener listener;
-    public TestThread(){
+    int id;
+    public TestThread(int id){
         listener= new MessageListener() {
             public ConsumeResult onMessage(Message message) {
                 System.out.println("get on message");
                 return null;
             }
         };
+        id=id;
     }
     public void run() {
-        DefaultConsumer consumer=new DefaultConsumer();
+        Consumer consumer=new DefaultConsumer();
         consumer.start();
-        consumer.subscribe("helloTopic","",listener);
+        consumer.setGroupId("group-" + id);
+        consumer.subscribe("helloTopic", "", listener);
+        System.out.println("finish subscribe");
+
     }
 }

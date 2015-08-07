@@ -1,8 +1,9 @@
 package com.alibaba.middleware.race.mom;
 
 
+import com.alibaba.middleware.race.mom.utils.NetStreamUtils;
+
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
@@ -19,17 +20,18 @@ public class ConsumerProxy {
         message=preProcessMsg(message);
         Socket socket = null;
         try {
+            System.out.println("brokerIp = " + brokerIp);
             socket = new Socket(brokerIp,PORT);
             System.out.println("connect to server");
             /*
             考虑优化：传输处理过的信息 不使用java的序列化
              */
-            ObjectOutputStream out=new ObjectOutputStream(socket.getOutputStream());
-            out.writeObject(message);
-            out.flush();
-            out.close();
+            NetStreamUtils netUtils=new NetStreamUtils(socket);
+            netUtils.writeObject(message);
+
             System.out.println("trans over");
             startListening(socket);
+            System.out.println("try to start listen");
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -42,6 +44,7 @@ public class ConsumerProxy {
     public static void startListening(Socket socket){
         thread=new ConsumerListenThread(socket);
         thread.start();
+        System.out.println("consumer:start listening--");
     }
     public static Message preProcessMsg(Message message){
         message.setProperty("type",TYPE);

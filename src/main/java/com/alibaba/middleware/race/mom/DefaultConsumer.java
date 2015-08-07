@@ -60,9 +60,6 @@ public class DefaultConsumer implements Consumer {
         this.groupId = groupId;
     }
 
-    /**
-     * 鍋滄娑堣垂鑰咃紝broker涓嶅啀鎶曢�掓秷鎭粰姝ゆ秷璐硅�呮満鍣ㄣ��
-     */
     public void stop() {
         Message message=new Message();
         message.setProperty("function","consumerStop");
@@ -72,14 +69,12 @@ public class DefaultConsumer implements Consumer {
     public static void main(String[] args) {
 
 
-        TestThread thread = new TestThread();
-        final int length=5;
+
+        final int length=1;
         Thread[] ts=new Thread[length];
+
         for(int i=0;i<length;i++){
-            Thread t=new Thread(thread);
-            ts[i]=t;
-        }
-        for(int i=0;i<length;i++){
+            ts[i]= new TestThread(i);
             ts[i].start();
         }
 

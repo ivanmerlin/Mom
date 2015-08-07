@@ -36,8 +36,18 @@ public class MessageCenter {
         String messageId=generateId();
         message.setMsgId(messageId);
         topicMap.get(message.getTopic()).offer(messageId);
-        contentMap.put(messageId,message);
+        contentMap.put(messageId, message);
         queue.offer(messageId);
+        for(Map.Entry<String,Message> entry:contentMap.entrySet()){
+            System.out.println("entry.getKey() = " + entry.getKey());
+            System.out.println("entry.getValue() = " + entry.getValue());
+        }
+        for(String s:queue){
+            System.out.println("s = " + s);
+        }
+        for(String id:idSet){
+            System.out.println("id = " + id);
+        }
     }
 
     /*

@@ -9,6 +9,7 @@ import java.util.Set;
 
 /**
  * Created by ivan.wang on 2015/8/6.
+ * 控制转发给多个用户的线程
  */
 public class MessageThread extends Thread{
     String messageId;

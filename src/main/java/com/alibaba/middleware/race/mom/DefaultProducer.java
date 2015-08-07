@@ -64,10 +64,8 @@ public class DefaultProducer implements Producer{
         Message message=new Message();
         message.setBody("Hello MOM".getBytes());
         message.setProperty("area", "us");
-        SendResult result=producer.sendMessage(message);
+        producer.sendMessage(message);
         System.out.println("send msg");
-        if (result.getStatus().equals(SendStatus.SUCCESS)) {
-            System.out.println("send success:"+result.getMsgId());
-        }
+
     }
 }

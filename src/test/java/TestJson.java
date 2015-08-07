@@ -1,5 +1,4 @@
 import com.alibaba.middleware.race.mom.Message;
-import org.json.JSONArray;
 
 /**
  * Created by ivan.wang on 2015/8/6.

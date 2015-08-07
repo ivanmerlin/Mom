@@ -31,7 +31,6 @@ public class ProducerProxy {
             System.out.println("send over");
             ObjectInputStream in=new ObjectInputStream(socket.getInputStream());
             result= (SendResult) in.readObject();
-            socket.close();
             return result;
 
         } catch (IOException e) {
