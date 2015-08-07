@@ -3,6 +3,7 @@ package com.alibaba.middleware.race.mom.broker;
 
 import com.alibaba.middleware.race.mom.Message;
 
+import java.net.Socket;
 import java.util.*;
 
 /**
@@ -31,9 +32,12 @@ public class Registry {
     /*
     这里可以专门做一个DataObject beanMapper 减少数据暴露
      */
-    public static void registerSubscriber(Message message) {
+    public static void registerSubscriber(Message message,Socket socket) {
         String topic=message.getProperty("topic");
         String groupId=message.getProperty("groupId");
+        /*
+            将用户加到对应topic的订阅列表中。
+         */
         if (topicMap.containsKey(topic)) {
             topicMap.get(topic).add(groupId);
         } else {
@@ -44,9 +48,14 @@ public class Registry {
         if(groupInfoMap.containsKey(groupId)){
             GroupInfo info=groupInfoMap.get(groupId);
             info.getTopicSet().add(topic);
+        }else {
+            GroupInfo info=new GroupInfo();
+            info.setSocket(socket);
+            info.addTopic(topic);
+            info.setGroupId(groupId);
+            info.setCondition(message.getProperty("condition"));
         }
     }
-
     public static void stopSubscribe(String groupId) {
         Set set=groupInfoMap.get(groupId).getTopicSet();
         Iterator<String> it = set.iterator();

@@ -1,5 +1,6 @@
-package com.alibaba.middleware.race.mom.broker;
+package com.alibaba.middleware.race.mom.broker.thread;
 
+import com.alibaba.middleware.race.mom.broker.MessageCenter;
 import com.alibaba.middleware.race.mom.broker.thread.SendThread;
 
 /**
@@ -27,7 +28,7 @@ public class DispatchThread extends Thread {
                     e.printStackTrace();
                 }
             }
-            MessageThread headThread=new MessageThread(MessageCenter.queue.poll());
+            MessageThread headThread=new MessageThread();
             headThread.start();
 
 

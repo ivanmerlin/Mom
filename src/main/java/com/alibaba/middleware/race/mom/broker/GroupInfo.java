@@ -1,5 +1,7 @@
 package com.alibaba.middleware.race.mom.broker;
 
+import java.net.Socket;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -9,17 +11,24 @@ public class GroupInfo {
 
     private String groupId;
     private Set<String> topicSet;
-    private String hostAddress;
     private String condition;
-    private String hostPort;
+    private Socket socket;
 
-    public String getHostPort() {
-        return hostPort;
+    public void addTopic(String topic){
+        if(topicSet==null){
+            topicSet=new HashSet<String>();
+        }
+        topicSet.add(topic);
+    }
+    public Socket getSocket() {
+        return socket;
     }
 
-    public void setHostPort(String hostPort) {
-        this.hostPort = hostPort;
+    public void setSocket(Socket socket) {
+        this.socket = socket;
     }
+
+
 
     public String getGroupId() {
         return groupId;
@@ -37,13 +46,7 @@ public class GroupInfo {
         this.topicSet = topicSet;
     }
 
-    public String getHostAddress() {
-        return hostAddress;
-    }
 
-    public void setHostAddress(String hostAddress) {
-        this.hostAddress = hostAddress;
-    }
 
     public String getCondition() {
         return condition;

@@ -11,9 +11,10 @@ import java.net.Socket;
  */
 public class ConsumerProxy {
     public static final int PORT = 9999;
-    public static final int LISTEN_PORT = 9999;
+    public static final int LISTEN_PORT = 8787;
     static String brokerIp;
     public static final String TYPE="consumer";
+    public static ConsumerListenThread thread;
     public static boolean sendMessage(Message message){
         message=preProcessMsg(message);
         Socket socket = null;
@@ -25,9 +26,10 @@ public class ConsumerProxy {
              */
             ObjectOutputStream out=new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(message);
+            out.flush();
             out.close();
             System.out.println("trans over");
-            socket.close();
+            startListening(socket);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -37,11 +39,11 @@ public class ConsumerProxy {
         return false;
     }
 
+    public static void startListening(Socket socket){
+        thread=new ConsumerListenThread(socket);
+        thread.start();
+    }
     public static Message preProcessMsg(Message message){
-
-        /*
-        ����message����ѽ
-         */
         message.setProperty("type",TYPE);
         return message;
     }
