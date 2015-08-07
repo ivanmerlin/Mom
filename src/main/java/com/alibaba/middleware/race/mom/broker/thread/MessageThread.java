@@ -15,8 +15,11 @@ public class MessageThread extends Thread{
 
     @Override
     public void run() {
-        Set set=Registry.topicMap.get(messageId);
-
+        Set<String> set=Registry.topicMap.get(messageId);
+        for(String groupId:set){
+            SendThread thread=new SendThread(messageId,groupId);
+            thread.start();
+        }
 
     }
 
