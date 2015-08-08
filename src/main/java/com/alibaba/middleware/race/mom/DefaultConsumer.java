@@ -19,7 +19,7 @@ public class DefaultConsumer implements Consumer {
     public void start() {
 //        String brokerIp=System.getProperty("SIP");
         String brokerIp = "127.0.0.1";
-        ConsumerProxy.setBrokerIp(brokerIp);
+        ConsumerConnection.setBrokerIp(brokerIp);
 
     }
 
@@ -38,7 +38,7 @@ public class DefaultConsumer implements Consumer {
         }
         message.setProperty("groupId",groupId);
         message.setProperty("function", "consumerSubscribe");
-        ConsumerProxy.sendMessage(message);
+        ConsumerConnection.sendMessage(message);
     }
 
     /**
@@ -51,22 +51,15 @@ public class DefaultConsumer implements Consumer {
      * @param listener
      */
 
-    /**
-     * 璁剧疆娑堣垂鑰呯粍id锛宐roker閫氳繃杩欎釜id鏉ヨ瘑鍒秷璐硅�呮満鍣�
-     *
-     * @param groupId
-     */
+
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
-    /**
-     * 鍋滄娑堣垂鑰咃紝broker涓嶅啀鎶曢�掓秷鎭粰姝ゆ秷璐硅�呮満鍣ㄣ��
-     */
     public void stop() {
         Message message=new Message();
         message.setProperty("function","consumerStop");
-        ConsumerProxy.sendMessage(message);
+        ConsumerConnection.sendMessage(message);
     }
 
     public static void main(String[] args) {

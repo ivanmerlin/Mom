@@ -4,7 +4,6 @@ package com.alibaba.middleware.race.mom;
 import com.alibaba.middleware.race.mom.encode.KryoDecoder;
 import com.alibaba.middleware.race.mom.encode.KryoEncoder;
 import com.alibaba.middleware.race.mom.encode.KryoPool;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -12,10 +11,8 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-import java.net.Socket;
 
-
-public class ConsumerProxy {
+public class ConsumerConnection {
     public static final int PORT = 9999;
     public static final int LISTEN_PORT = 9999;
     static String brokerIp;
@@ -68,7 +65,7 @@ public class ConsumerProxy {
         return message;
     }
     public static void setBrokerIp(String brokerIp) {
-        ConsumerProxy.brokerIp = brokerIp;
+        ConsumerConnection.brokerIp = brokerIp;
     }
 
 
