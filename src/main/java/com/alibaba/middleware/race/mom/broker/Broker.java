@@ -2,12 +2,16 @@ package com.alibaba.middleware.race.mom.broker;
 
 
 import com.alibaba.middleware.race.mom.broker.thread.ListenThread;
+import com.alibaba.middleware.race.mom.encode.KryoDecoder;
+import com.alibaba.middleware.race.mom.encode.KryoEncoder;
+import com.alibaba.middleware.race.mom.encode.KryoPool;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
@@ -53,6 +57,7 @@ import java.net.Socket;
 public class Broker {
     private static final int PORT = 9999;
     int connectNum;
+    static KryoPool pool=new KryoPool();
     public Broker() {
 
     }
@@ -84,15 +89,19 @@ public class Broker {
         try{
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(bossGroup,workerGroup).channel(NioServerSocketChannel.class)
-                    .localAddress(PORT).childHandler(new ChannelInitializer<Channel>() {
+                    .localAddress(PORT).childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
-                protected void initChannel(Channel channel) throws Exception {
+                protected void initChannel(SocketChannel socketChannel) throws Exception {
                     /**添加Object解码器*/
-                    channel.pipeline().addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())),new ObjectEncoder());
+//                    channel.pipeline().addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())),new ObjectEncoder());
+
+                    socketChannel.pipeline().addLast(new KryoDecoder(pool));
+                    socketChannel.pipeline().addLast(new KryoEncoder(pool));
                     /**添加对消息处理的Handler*/
-                    channel.pipeline().addLast(new MomServerHandler());
+                    socketChannel.pipeline().addLast(new MomServerHandler());
                 }
             });
+
             /**开启服务和关闭服务*/
             ChannelFuture channelFuture = serverBootstrap.bind().sync();
             channelFuture.channel().closeFuture().sync();

@@ -1,12 +1,18 @@
 package com.alibaba.middleware.race.mom;
 
 
+import com.alibaba.middleware.race.mom.encode.KryoDecoder;
+import com.alibaba.middleware.race.mom.encode.KryoEncoder;
+import com.alibaba.middleware.race.mom.encode.KryoPool;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+
+import java.net.Socket;
 
 
 public class ConsumerProxy {
@@ -14,6 +20,7 @@ public class ConsumerProxy {
     public static final int LISTEN_PORT = 9999;
     static String brokerIp;
     public static final String TYPE="consumer";
+    static KryoPool pool=new KryoPool();
 
     public static boolean sendMessage(Message message){
         final Message message_;
@@ -39,10 +46,13 @@ public class ConsumerProxy {
         try{
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(group).channel(NioSocketChannel.class).remoteAddress(brokerIp,PORT)
-                    .handler(new ChannelInitializer<Channel>() {
+                    .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(Channel channel) throws Exception {
-                            channel.pipeline().addLast(new MomConsumerHandler(message_));
+                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            /**增加编码解码器*/
+                            socketChannel.pipeline().addLast(new KryoDecoder(pool));
+                            socketChannel.pipeline().addLast(new KryoEncoder(pool));
+                            socketChannel.pipeline().addLast(new MomConsumerHandler(message_));
                         }
                     });
 
