@@ -16,12 +16,15 @@ public class ConsumerProxy {
     static String brokerIp;
     public static final String TYPE="consumer";
     public static ConsumerListenThread thread;
+    public static Socket socket;
     public static boolean sendMessage(Message message){
         message=preProcessMsg(message);
-        Socket socket = null;
+
         try {
             System.out.println("brokerIp = " + brokerIp);
-            socket = new Socket(brokerIp,PORT);
+            if(socket==null) {
+                socket = new Socket(brokerIp, PORT);
+            }
             System.out.println("connect to server");
             /*
             考虑优化：传输处理过的信息 不使用java的序列化

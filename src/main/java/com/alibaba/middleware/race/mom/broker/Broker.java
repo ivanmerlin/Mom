@@ -1,7 +1,9 @@
 package com.alibaba.middleware.race.mom.broker;
 
 
+import com.alibaba.middleware.race.mom.Message;
 import com.alibaba.middleware.race.mom.broker.thread.ListenThread;
+import com.alibaba.middleware.race.mom.utils.NetStreamUtils;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -60,8 +62,11 @@ public class Broker {
 
                 System.out.println("start server");
                 final Socket socket=server.accept();
+                NetStreamUtils netUtils=new NetStreamUtils(socket);
                 connectNum++;
                 System.out.println("get a connection");
+                Message message = (Message) netUtils.readObject();
+                System.out.println("message=" + message.getProperty("function"));
                 new ListenThread(socket).start();
 
             } catch (IOException e) {

@@ -34,6 +34,7 @@ public class ListenThread extends Thread{
             System.out.println("message=" + message.getProperty("function"));
             if(message.getProperty("type").equals(CONSUMER_TYPE)){
                 MessageDispatcher.dispatch(message,socket);
+                System.out.println("ListenThread->dispatcher.dispatch()");
             }else if(message.getProperty("type").equals(PRODUCER_TYPE)){
                 System.out.println("message = " + message.getBody().toString());
                 //generate a message Id

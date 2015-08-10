@@ -21,8 +21,14 @@ public class TestThread extends Thread{
         Consumer consumer=new DefaultConsumer();
         consumer.start();
         consumer.setGroupId("group-" + id);
+        System.out.println("ready to subscribe");
         consumer.subscribe("helloTopic", "", listener);
         System.out.println("finish subscribe");
 
+    }
+
+    @Override
+    public synchronized void start() {
+        super.start();
     }
 }

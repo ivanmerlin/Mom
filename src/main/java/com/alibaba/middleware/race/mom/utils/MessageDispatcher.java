@@ -12,6 +12,7 @@ public class MessageDispatcher {
 
    public static void dispatch(Message message,Socket socket){
       String function=message.getProperty("function");
+       System.out.println("function = " + function);
        if(function.equals("consumerSubscribe")){
            MessageProcessor.consumerSubscribe(message,socket);
        }else if(function.equals("consumerStop")){

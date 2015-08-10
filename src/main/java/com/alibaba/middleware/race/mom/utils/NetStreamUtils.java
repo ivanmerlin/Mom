@@ -15,8 +15,6 @@ public class NetStreamUtils {
     ObjectOutputStream output;
     static int TIME_OUT = 10;
 
-    public NetStreamUtils() {
-    }
 
     public NetStreamUtils(Socket socket) {
         this.socket = socket;
