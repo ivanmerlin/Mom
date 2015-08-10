@@ -88,7 +88,7 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
      * @param message
      * @param callback
      */
-    public void asyncSendMessage(Message message, SendCallback callback) {
+    public void asyncSendMessage(Message message, final SendCallback callback) {
         message = preProcessMsg(message);
         /**如果处于非连接状态*/
         if(!connected){
@@ -100,8 +100,13 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
         /**如果没有成功接收到消息？*/
         /**异步要怎么取得结果*/
         //TODO 异步的情况下取得sendResult
-        channelFuture.addListener(future -> callback.onResult(sendResult));
-
+       // channelFuture.addListener(future -> callback.onResult(sendResult));
+        channelFuture.addListener(new GenericFutureListener() {
+            @Override
+            public void operationComplete(Future future) throws Exception {
+                callback.onResult(sendResult);
+            }
+        });
 
     }
 

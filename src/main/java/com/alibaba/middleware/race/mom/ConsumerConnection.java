@@ -84,7 +84,13 @@ public class ConsumerConnection extends ChannelInboundHandlerAdapter{
 
         /**发送Message*/
         ChannelFuture channelFuture = channel.writeAndFlush(message);
-        channelFuture.addListener(future -> System.out.println("发送订阅消息成功!"));
+        channelFuture.addListener(new GenericFutureListener() {
+            @Override
+            public void operationComplete(Future future) throws Exception {
+                System.out.println("发送订阅消息成功!");
+            }
+        });
+
     }
 
     /**关闭连接*/

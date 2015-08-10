@@ -14,7 +14,7 @@ public final class KyroFactory {
 	}
 	
 	public KyroFactory(final int maxTotal, final int minIdle, final long maxWaitMillis, final long minEvictableIdleTimeMillis) {
-		kryoPool = new GenericObjectPool<>(new PooledKryoFactory());
+		kryoPool = new GenericObjectPool<Kryo>(new PooledKryoFactory());
 		GenericObjectPoolConfig config = new GenericObjectPoolConfig();
 		config.setMaxTotal(maxTotal);
 		config.setMinIdle(minIdle);
