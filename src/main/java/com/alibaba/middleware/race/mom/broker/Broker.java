@@ -1,25 +1,15 @@
 package com.alibaba.middleware.race.mom.broker;
 
-
-import com.alibaba.middleware.race.mom.broker.thread.ListenThread;
 import com.alibaba.middleware.race.mom.encode.KryoDecoder;
 import com.alibaba.middleware.race.mom.encode.KryoEncoder;
 import com.alibaba.middleware.race.mom.encode.KryoPool;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.serialization.ClassResolvers;
-import io.netty.handler.codec.serialization.ObjectDecoder;
-import io.netty.handler.codec.serialization.ObjectEncoder;
-
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  * Created by ivan.wang on 2015/8/5.
@@ -63,27 +53,7 @@ public class Broker {
     }
 
     public void start(){
-//        ServerSocket server= null;
-//        connectNum=0;
-//        try {
-//            server = new ServerSocket(PORT);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        while(true){
-//            try {
-//
-//                System.out.println("start server");
-//                final Socket socket=server.accept();
-//                connectNum++;
-//                System.out.println("get a connection");
-//                new ListenThread(socket).start();
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
+
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try{
@@ -104,6 +74,9 @@ public class Broker {
 
             /**开启服务和关闭服务*/
             ChannelFuture channelFuture = serverBootstrap.bind().sync();
+
+            System.out.println("Netty Server starts successfully!!");
+
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();

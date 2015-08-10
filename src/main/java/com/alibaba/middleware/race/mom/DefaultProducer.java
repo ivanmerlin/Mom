@@ -23,6 +23,7 @@ public class DefaultProducer  implements Producer {
 
         //TODO 可以创建一个
         producerConection = new ProducerConection();
+
         producerConection.setBrokerIp(brokerIp);
 
         try {

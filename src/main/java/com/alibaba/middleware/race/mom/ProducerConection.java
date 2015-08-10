@@ -9,6 +9,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import com.alibaba.middleware.race.mom.encode.KryoDecoder;
 import com.alibaba.middleware.race.mom.encode.KryoEncoder;
 import com.alibaba.middleware.race.mom.encode.KryoPool;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 import java.io.IOException;
 
@@ -18,7 +20,7 @@ import java.io.IOException;
 
 /**extends ChannelInboundHandlerAdapter 改成implements ChannelHandler？*/
 public class ProducerConection extends ChannelInboundHandlerAdapter{
-    private static String brokerIp;
+    private static String brokerIp = "127.0.0.1";
     //TODO 设置为枚举类型
     public static final String TYPE="producer";
     public static final int PORT = 9999;
@@ -32,41 +34,45 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
 
     private boolean connected;
 
-    public static void setBrokerIp(String brokerIp) {
-        ProducerConection.brokerIp = brokerIp;
+    public void setBrokerIp(String brokerIp) {
+        this.brokerIp = brokerIp;
     }
 
 
 
     public SendResult sendMessage(Message message) throws Throwable{
+
         message = preProcessMsg(message);
         /**如果处于非连接状态*/
         if(!connected){
             throw new IllegalStateException("not connected");
         }
         /**发送Message*/
-        ChannelFuture channelFuture = channel.write(message);
-        /**如果没有成功接收到消息？*/
+        ChannelFuture channelFuture = channel.writeAndFlush(message);
+        System.out.println("发送信息！！");
+
+        /**阻塞线程直到写操作完成*/
         if(!channelFuture.awaitUninterruptibly().isSuccess()){
             close();
         }
 
-        /**死锁知道有消息返回？*/
+        /**因为是同步调用所以锁死线程*/
         waitForReponse();
 
+        /**如果存在异常就抛出*/
         Throwable ex = exception;
-        SendResult result = this.sendResult;
-        this.sendResult = null;
-        /**如果存在异常*/
-        if(null != ex){
-            close();
+        exception = null;
+        if(ex != null){
             throw ex;
         }
+
+        SendResult result = this.sendResult;
+        this.sendResult = null;
         return result;
 
     }
 
-    /**如果没有收到消息就锁死当前channel*/
+    /**锁死当前channel直到收到信息后*/
     private void waitForReponse(){
         synchronized (channel) {
             try{
@@ -88,12 +94,15 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
         if(!connected){
             throw new IllegalStateException("not connected");
         }
+
         /**发送Message*/
-        ChannelFuture channelFuture = channel.write(message);
+        ChannelFuture channelFuture = channel.writeAndFlush(message);
         /**如果没有成功接收到消息？*/
         /**异步要怎么取得结果*/
         //TODO 异步的情况下取得sendResult
-        callback.onResult(sendResult);
+        channelFuture.addListener(future -> callback.onResult(sendResult));
+
+
     }
 
 
@@ -103,7 +112,7 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
         EventLoopGroup group = new NioEventLoopGroup();
         try{
             Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(group).channel(NioSocketChannel.class).remoteAddress(brokerIp,PORT)
+            bootstrap.group(group).channel(NioSocketChannel.class).remoteAddress("127.0.0.1",PORT)
                     .option(ChannelOption.TCP_NODELAY, true).handler(new ChannelInitializer<SocketChannel>() {
 
                 @Override
@@ -111,11 +120,12 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
                     /**增加编码解码器*/
                     socketChannel.pipeline().addLast(new KryoDecoder(pool));
                     socketChannel.pipeline().addLast(new KryoEncoder(pool));
-                    socketChannel.pipeline().addLast(this);
+                    /**自己本身就是一个Handler*/
+                    socketChannel.pipeline().addLast(ProducerConection.this);
                 }
             });
 
-            ChannelFuture channelFuture = bootstrap.connect(brokerIp,PORT).sync();
+            ChannelFuture channelFuture = bootstrap.connect().sync();
 
             /**不明白加这一步是什么意思 不知道该加不加*/
 //            f.channel().closeFuture().sync();
@@ -126,6 +136,8 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
 
             channel = channelFuture.channel();
             connected = true;
+
+            System.out.println("Netty Client 连接成功！");
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -142,6 +154,7 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
          */
         if (null != channel) {
             channel.close().awaitUninterruptibly();
+            //TODO 还有其它资源需要释放吗？
 
             this.exception = new IOException("connection closed");
             synchronized (channel) {
@@ -167,17 +180,18 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         /**连接成功的时候发送主题信息*/
+
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-        //TODO 删除System语句 提高性能？
-
         if(msg instanceof SendResult){
-            /**让channel不在处于锁定的状态*/
-            ctx.channel().notifyAll();
-
+            /**解除channel的死锁状态*/
+            synchronized (this.channel) {
+                this.channel.notifyAll();
+            }
+            /**得到返回的结果*/
             sendResult=(SendResult)msg;
         }
     }
