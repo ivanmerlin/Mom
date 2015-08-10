@@ -15,11 +15,20 @@ public class DefaultConsumer implements Consumer {
     String groupId;
     String userId;
     MessageListener listener;
+    ConsumerConnection consumerConnection;
 
     public void start() {
 //        String brokerIp=System.getProperty("SIP");
         String brokerIp = "127.0.0.1";
-        ConsumerProxy.setBrokerIp(brokerIp);
+//        ConsumerConnection.setBrokerIp(brokerIp);
+        consumerConnection = new ConsumerConnection();
+        consumerConnection.setBrokerIp(brokerIp);
+        try {
+            consumerConnection.connect();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        //TODO 这里对hostName的设置还需要调整
 
     }
 
@@ -27,9 +36,6 @@ public class DefaultConsumer implements Consumer {
     public void subscribe(String topic, String filter, com.alibaba.middleware.race.mom.MessageListener listener) {
         Message message = new Message();
         message.setProperty("topic", topic);
-        /*
-        璁剧疆filter
-         */
         if(StringUtils.isNotBlank(filter)){
             String[] conditions=filter.split("=");
             if(conditions.length>1){
@@ -38,7 +44,7 @@ public class DefaultConsumer implements Consumer {
         }
         message.setProperty("groupId",groupId);
         message.setProperty("function", "consumerSubscribe");
-        ConsumerProxy.sendMessage(message);
+        consumerConnection.sendMessage(message);
     }
 
     /**
@@ -51,19 +57,16 @@ public class DefaultConsumer implements Consumer {
      * @param listener
      */
 
-    /**
-     * 璁剧疆娑堣垂鑰呯粍id锛宐roker閫氳繃杩欎釜id鏉ヨ瘑鍒秷璐硅�呮満鍣�
-     *
-     * @param groupId
-     */
+
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
     public void stop() {
         Message message=new Message();
-        message.setProperty("function","consumerStop");
-        ConsumerProxy.sendMessage(message);
+        message.setProperty("function", "consumerStop");
+        consumerConnection.close();
+//        consumerConnection.sendMessage(message);
     }
 
     public static void main(String[] args) {

@@ -1,13 +1,15 @@
 package com.alibaba.middleware.race.mom.broker;
 
-
-import com.alibaba.middleware.race.mom.Message;
-import com.alibaba.middleware.race.mom.broker.thread.ListenThread;
-import com.alibaba.middleware.race.mom.utils.NetStreamUtils;
-
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import com.alibaba.middleware.race.mom.encode.KryoDecoder;
+import com.alibaba.middleware.race.mom.encode.KryoEncoder;
+import com.alibaba.middleware.race.mom.encode.KryoPool;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 /**
  * Created by ivan.wang on 2015/8/5.
@@ -45,37 +47,45 @@ import java.net.Socket;
 public class Broker {
     private static final int PORT = 9999;
     int connectNum;
+    static KryoPool pool=new KryoPool();
     public Broker() {
 
     }
 
     public void start(){
-        ServerSocket server= null;
-        connectNum=0;
-        try {
-            server = new ServerSocket(PORT);
-        } catch (IOException e) {
+
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try{
+            ServerBootstrap serverBootstrap = new ServerBootstrap();
+            serverBootstrap.group(bossGroup,workerGroup).channel(NioServerSocketChannel.class)
+                    .localAddress(PORT).childHandler(new ChannelInitializer<SocketChannel>() {
+                @Override
+                protected void initChannel(SocketChannel socketChannel) throws Exception {
+                    /**添加Object解码器*/
+//                    channel.pipeline().addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())),new ObjectEncoder());
+
+                    socketChannel.pipeline().addLast(new KryoDecoder(pool));
+                    socketChannel.pipeline().addLast(new KryoEncoder(pool));
+                    /**添加对消息处理的Handler*/
+                    socketChannel.pipeline().addLast(new MomServerHandler());
+                }
+            });
+
+            /**开启服务和关闭服务*/
+            ChannelFuture channelFuture = serverBootstrap.bind().sync();
+
+            System.out.println("Netty Server starts successfully!!");
+
+            channelFuture.channel().closeFuture().sync();
+        } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
-        while(true){
-            try {
 
-                System.out.println("start server");
-                final Socket socket=server.accept();
-                NetStreamUtils netUtils=new NetStreamUtils(socket);
-                connectNum++;
-                System.out.println("get a connection");
-                Message message = (Message) netUtils.readObject();
-                System.out.println("message=" + message.getProperty("function"));
-                new ListenThread(socket).start();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
     }
-
 
     public static void main(String[] args) {
         Broker broker=new Broker();
