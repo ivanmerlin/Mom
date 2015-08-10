@@ -155,7 +155,7 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
         if (null != channel) {
             channel.close().awaitUninterruptibly();
             //TODO 还有其它资源需要释放吗？
-
+            channel.eventLoop().shutdownGracefully();
             this.exception = new IOException("connection closed");
             synchronized (channel) {
                 channel.notifyAll();

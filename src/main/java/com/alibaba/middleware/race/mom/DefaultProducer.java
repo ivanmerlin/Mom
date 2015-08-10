@@ -75,6 +75,7 @@ public class DefaultProducer  implements Producer {
      * 停止生产者，销毁资源
      */
     public void stop() {
+
         producerConection.close();
     }
 
