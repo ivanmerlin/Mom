@@ -1,6 +1,5 @@
 package com.alibaba.middleware.race.mom;
 
-import com.alibaba.middleware.race.mom.Message;
 import com.alibaba.middleware.race.mom.broker.MessageThread;
 import com.alibaba.middleware.race.mom.utils.NetStreamUtils;
 
