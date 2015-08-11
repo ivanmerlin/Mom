@@ -2,11 +2,11 @@ package com.alibaba.middleware.race.mom.data;
 
 
 import com.alibaba.middleware.race.mom.Message;
+import com.alibaba.middleware.race.mom.broker.Registry;
 
+import javax.xml.crypto.Data;
 import java.io.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by ivanmerlin on 2015/8/5.
@@ -23,9 +23,14 @@ public class DataHelper {
     这里又使用了java的序列化 肯定会影响性能吧
      */
     static BufferedOutputStream out;
-    static final String MessagePath="/MessageStore/";
+
     public static void saveGroupMessage(String groupId,Message message){
-        String filePath="/"+groupId+"/store"+"/"+message.getMsgId()+".txt";
+        String filePath;
+        if(System.getProperty("userhome")!=null) {
+            filePath = System.getProperty("userhome") + File.separator + "store" + "/" + groupId+"_"+ message.getMsgId() ;
+        }else{
+            filePath= "/userhome"+ File.separator + "store" + "/" + groupId+"_"+message.getMsgId() ;
+        }
         try {
             File file=new File(filePath);
             filePath=file.getAbsolutePath();
@@ -35,10 +40,12 @@ public class DataHelper {
                 }
                 file.createNewFile();
             }
+            /*
             out=new BufferedOutputStream(new FileOutputStream(filePath));
             out.write(getGroupMsgByte(groupId, message));
             out.flush();
             out.close();
+            */
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -57,7 +64,12 @@ public class DataHelper {
     }
 
     public static void saveMessage(Message message){
-        String filePath=MessagePath+message.getMsgId();
+        String filePath;
+        if(System.getProperty("userhome")!=null) {
+            filePath = System.getProperty("userhome") + File.separator + "messageInfo/" + message.getMsgId();
+        }else{
+            filePath= "/userhome"+ File.separator  + "messageInfo/"+ message.getMsgId();
+        }
         try {
             File file=new File(filePath);
             filePath=file.getAbsolutePath();
@@ -90,19 +102,26 @@ public class DataHelper {
 
     }
 
+
     public static Map<String,Message> loadMessages(){
-        File directory=new File(MessagePath);
+        String filePath;
+        if(System.getProperty("userhome")!=null) {
+            filePath = System.getProperty("userhome") + File.separator + "messageInfo/" ;
+        }else{
+            filePath= "/userhome"+ File.separator + "messageInfo/";
+        }
+        File directory=new File(filePath);
         File[] files=directory.listFiles();
         BufferedInputStream bi;
         Map<String,Message> map=new HashMap<String,Message>();
         for(File file:files){
             try {
-                System.out.println("file.getAbsolutePath() = " + file.getAbsolutePath());
+//                System.out.println("file.getAbsolutePath() = " + file.getAbsolutePath());
                 bi=new BufferedInputStream(new FileInputStream(file));
                 byte[] bytes=new byte[bi.available()];
                 bi.read(bytes);
                 String temp=new String(bytes);
-                System.out.println("temp = " + temp);
+//                System.out.println("temp = " + temp);
                 String[] strings=temp.split(" ");
                 Message message=new Message();
                 if(strings.length>=5) {
@@ -128,6 +147,24 @@ public class DataHelper {
         }
         return map;
     }
+    /*
+     这里返回groupId 和 msgId对应
+     */
+    public static Set<String> loadGroupMessage(){
+        String filePath;
+        if(System.getProperty("userhome")!=null) {
+            filePath = System.getProperty("userhome") + File.separator + "store" + "/";
+        }else{
+            filePath= "/userhome"+ File.separator + "store" + "/";
+        }
+        File directory=new File(filePath);
+        File[] files=directory.listFiles();
+        Set<String> set=new HashSet();
+        for(File file:files){
+            set.add(file.getName());
+        }
+        return set;
+    }
 
     public static void main(String[] args) {
         Message m=new Message();
@@ -137,16 +174,25 @@ public class DataHelper {
         m.setMsgId("54646564");
         m.setBornTime(new Date().getTime());
 //        DataHelper.saveMessage(m);
-//        long begin=System.currentTimeMillis();
-//        for(int i=0;i<1000;i++) {
+        long begin=System.currentTimeMillis();
+//        for(int i=1000;i<20000;i++) {
 //            m.setMsgId((i*1000)+"");
 //            DataHelper.saveGroupMessage("user002", m);
 //        }
-//        long end=System.currentTimeMillis();
-//        System.out.println("(end-begin) = " + (end - begin));
 
-        DataHelper.loadMessages();
+        for(int i=1000;i<10000;i++){
+            m.setMsgId((i*1000)+"");
+            DataHelper.saveMessage(m);
+        }
+        long end=System.currentTimeMillis();
+        System.out.println("(end-begin) = " + (end - begin));
 
+
+        begin=System.currentTimeMillis();
+                DataHelper.loadMessages();
+//        DataHelper.loadGroupMessage();
+        end=System.currentTimeMillis();
+        System.out.println("(end-begin) = " + (end - begin));
 
     }
 }
