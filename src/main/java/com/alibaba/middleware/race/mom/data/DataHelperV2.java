@@ -25,7 +25,7 @@ public class DataHelperV2 {
         }else{
             path="/userhome";
         }
-        path=path+ File.separator+"log";
+        path=path+ File.separator+"store/log";
         File file=new File(path);
         System.out.println("file.getAbsolutePath() = " + file.getAbsolutePath());
         if(!file.exists()){
