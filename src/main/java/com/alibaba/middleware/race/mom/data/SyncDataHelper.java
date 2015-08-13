@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Date;
+import java.util.Random;
 
 /**
  * Created by ivan.wang on 2015/8/13.
@@ -20,7 +22,8 @@ public class SyncDataHelper {
     static String filePath;
     static int currentNo;
     static int saveTimes;
-
+    static File file;
+    final static int FILE_SIZE=1024*1024*3;
     static {
         saveTimes=0;
         if(System.getProperty("userhome")!=null){
@@ -30,9 +33,10 @@ public class SyncDataHelper {
         }
         File rootFile=new File(filePath);
         File[] files=rootFile.listFiles();
-        currentNo=files.length;
-
-        File file=new File(filePath+MESSAGELOG_PREFIX+currentNo);
+        if(files!=null) {
+            currentNo = files.length==0?0:files.length-1;
+        }
+        file=new File(filePath+MESSAGELOG_PREFIX+currentNo+".store");
 
         /*
         判断当前读到第几个文件了
@@ -42,14 +46,16 @@ public class SyncDataHelper {
                 file.getParentFile().mkdirs();
             }
         }
-        if(file.length()>1024*1024){
-            currentNo++;
-            file=new File(filePath+MESSAGELOG_PREFIX+currentNo);
-        }
+
+        System.out.println("file.getAbsolutePath() = " + file.getAbsolutePath());
         try {
             raf=new RandomAccessFile(file,"rw");
             channel =raf.getChannel();
-            out = channel.map(FileChannel.MapMode.READ_WRITE,0, channel.size());
+            out = channel.map(FileChannel.MapMode.READ_WRITE, 0, FILE_SIZE);
+
+            moveToEnd();
+
+//            checkSize();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -57,11 +63,21 @@ public class SyncDataHelper {
         }
     }
 
+static public void moveToEnd(){
+    System.out.println("out.remaining() = " + out.remaining());
+
+    System.out.println("out.position() = " + out.position());
+
+    out.position(FILE_SIZE - out.remaining());
+    System.out.println("out.position() = " + out.position());
+
+}
     /*
     还是不确定是不是要存groupId
     这里先保存单纯的message信息
      */
-    public boolean saveMessage(Message message){
+    public static boolean saveMessage(Message message){
+        checkSize();
         if(out==null){
             return false;
         }else{
@@ -74,8 +90,47 @@ public class SyncDataHelper {
              */
             byte[] bytes= builder.toString().getBytes();
             out.put(bytes);
+            out.putChar('\n');
             out.force();
             return true;
+        }
+    }
+    public static void checkSize(){
+        if(out.position()>FILE_SIZE-200){
+            file=new File(filePath+MESSAGELOG_PREFIX+currentNo+".store");
+            try {
+                raf=new RandomAccessFile(file,"rw");
+                channel =raf.getChannel();
+                out = channel.map(FileChannel.MapMode.READ_WRITE,0, FILE_SIZE);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Message m=new Message();
+        m.setBody("hello lalala".getBytes());
+        m.setTopic("say");
+        m.setProperty("filter", "area=uk");
+        Random random=new Random();
+        m.setMsgId(Integer.toString(random.nextInt(1000000)));
+        m.setBornTime(new Date().getTime());
+        long begin=System.currentTimeMillis();
+        SyncDataHelper.saveMessage(m);
+
+//        for(int i=1000;i<1100;i++){
+//            m.setMsgId((i*1000)+"");
+//            SyncDataHelper.saveMessage(m);
+//        }
+        long end=System.currentTimeMillis();
+        System.out.println("(end-begin) = " + (end - begin));
+        try {
+            SyncDataHelper.raf.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
