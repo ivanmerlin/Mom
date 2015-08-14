@@ -24,17 +24,19 @@ public class TestDefaultProducer {
 
         /**同步调用测试*/
         SendResult sendResult = defaultProducer.sendMessage(message);
+        /**同步调用测试*/
+        SendResult sendResult2 = defaultProducer.sendMessage(message);
 
 
 
         /**异步调用测试*/
-        defaultProducer.asyncSendMessage(message, new SendCallback() {
-            @Override
-            public void onResult(SendResult sendResult) {
-                System.out.println("call back success!!");
-            }
-        });
-
-        defaultProducer.stop();
+//        defaultProducer.asyncSendMessage(message, new SendCallback() {
+//            @Override
+//            public void onResult(SendResult sendResult) {
+//                System.out.println("call back success!!");
+//            }
+//        });
+//
+//        defaultProducer.stop();
     }
 }

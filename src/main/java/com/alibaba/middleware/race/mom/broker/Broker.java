@@ -1,9 +1,5 @@
 package com.alibaba.middleware.race.mom.broker;
 
-import com.alibaba.middleware.race.mom.Message;
-import com.alibaba.middleware.race.mom.encode.KryoDecoder;
-import com.alibaba.middleware.race.mom.encode.KryoEncoder;
-import com.alibaba.middleware.race.mom.encode.KryoPool;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -12,9 +8,15 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.alibaba.middleware.race.mom.encode.KryoDecoder;
+import com.alibaba.middleware.race.mom.encode.KryoEncoder;
+import com.alibaba.middleware.race.mom.encode.KryoPool;
 
 /**
  * Created by ivan.wang on 2015/8/5.
@@ -53,8 +55,10 @@ public class Broker {
     private static final int PORT = 9999;
     int connectNum;
     static KryoPool pool=new KryoPool();
+    private ConfigServer configserver=new ConfigServer();
+    
+    
     public Broker() {
-
     }
 
     public void start(){
@@ -69,11 +73,10 @@ public class Broker {
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     /**添加Object解码器*/
 //                    channel.pipeline().addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(this.getClass().getClassLoader())),new ObjectEncoder());
-
                     socketChannel.pipeline().addLast(new KryoDecoder(pool));
                     socketChannel.pipeline().addLast(new KryoEncoder(pool));
                     /**添加对消息处理的Handler*/
-                    socketChannel.pipeline().addLast(new MomServerHandler());
+                    socketChannel.pipeline().addLast(new MomServerHandler(configserver));
                 }
             });
 

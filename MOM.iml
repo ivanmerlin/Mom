@@ -21,6 +21,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="commons-io-2.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:1.4" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba.race:middleware-mom:1.0" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-all:4.0.23.Final" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.1.4" level="project" />

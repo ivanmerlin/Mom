@@ -15,36 +15,36 @@ public class DefaultConsumer implements Consumer {
     String groupId;
     String userId;
     MessageListener listener;
-    ConsumerConnection consumerConnection;
+    ConsumerConnection consumerConnection= new ConsumerConnection();
+    Message subscribeMsg;
 
     public void start() {
-//        String brokerIp=System.getProperty("SIP");
-        String brokerIp = "127.0.0.1";
-//        ConsumerConnection.setBrokerIp(brokerIp);
-        consumerConnection = new ConsumerConnection();
+        String brokerIp=System.getProperty("SIP");
+        if(brokerIp==null){
+            brokerIp = "127.0.0.1";
+        }
         consumerConnection.setBrokerIp(brokerIp);
         try {
-            consumerConnection.connect();
+            consumerConnection.connect(subscribeMsg,listener);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
-        //TODO 这里对hostName的设置还需要调整
-
     }
 
     @Override
     public void subscribe(String topic, String filter, com.alibaba.middleware.race.mom.MessageListener listener) {
-        Message message = new Message();
-        message.setProperty("topic", topic);
+        subscribeMsg = new Message();
+        subscribeMsg.setTopic(topic);
         if(StringUtils.isNotBlank(filter)){
             String[] conditions=filter.split("=");
             if(conditions.length>1){
-                message.setProperty(conditions[0],conditions[1]);
+                subscribeMsg.setProperty(conditions[0],conditions[1]);
             }
         }
-        message.setProperty("groupId",groupId);
-        message.setProperty("function", "consumerSubscribe");
-        consumerConnection.sendMessage(message);
+        subscribeMsg.setProperty("groupId",groupId);
+        subscribeMsg.setProperty("function", "consumerSubscribe");
+        subscribeMsg.setProperty("type", "consumer");
+        this.listener=listener;
     }
 
     /**

@@ -4,6 +4,7 @@ package com.alibaba.middleware.race.mom;
 import com.alibaba.middleware.race.mom.encode.KryoDecoder;
 import com.alibaba.middleware.race.mom.encode.KryoEncoder;
 import com.alibaba.middleware.race.mom.encode.KryoPool;
+
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.bootstrap.Bootstrap;
@@ -24,8 +25,10 @@ public class ConsumerConnection extends ChannelInboundHandlerAdapter{
     private volatile Throwable exception;
 
     private Channel channel;
-
+    private Message subscribeMsg;
     private boolean connected;
+    private MessageListener listener;
+    
 
     public static Message preProcessMsg(Message message){
         message.setProperty("type",TYPE);
@@ -35,14 +38,18 @@ public class ConsumerConnection extends ChannelInboundHandlerAdapter{
         this.brokerIp = brokerIp;
     }
 
-    /**开始连接*/
-    public void connect() throws Throwable{
+    /**开始连接
+     * @param subscribeMsg 
+     * @param listener */
+    public void connect(Message subscribeMsg, MessageListener listener) throws Throwable{
         /**加入TYPE:producer属性*/
         SendResult result=null;
+        this.listener=listener;
+        this.subscribeMsg=subscribeMsg;
         EventLoopGroup group = new NioEventLoopGroup();
         try{
             Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(group).channel(NioSocketChannel.class).remoteAddress("127.0.0.1",PORT)
+            bootstrap.group(group).channel(NioSocketChannel.class).remoteAddress(brokerIp,PORT)
                     .option(ChannelOption.TCP_NODELAY, true).handler(new ChannelInitializer<SocketChannel>() {
 
                 @Override
@@ -54,11 +61,10 @@ public class ConsumerConnection extends ChannelInboundHandlerAdapter{
                     socketChannel.pipeline().addLast(ConsumerConnection.this);
                 }
             });
-
+            
             ChannelFuture channelFuture = bootstrap.connect().sync();
-
             /**不明白加这一步是什么意思 不知道该加不加*/
-//            f.channel().closeFuture().sync();
+//            channelFuture.channel().closeFuture().sync();
             /**如果连接失败了*/
             if (!channelFuture.awaitUninterruptibly().isSuccess()){
                 throw new Exception("connect fail");
@@ -66,8 +72,6 @@ public class ConsumerConnection extends ChannelInboundHandlerAdapter{
 
             channel = channelFuture.channel();
             connected = true;
-
-            System.out.println("Netty Client 连接成功！");
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -81,7 +85,6 @@ public class ConsumerConnection extends ChannelInboundHandlerAdapter{
         if(!connected){
             throw new IllegalStateException("not connected");
         }
-
         /**发送Message*/
         ChannelFuture channelFuture = channel.writeAndFlush(message);
         channelFuture.addListener(new GenericFutureListener() {
@@ -103,7 +106,6 @@ public class ConsumerConnection extends ChannelInboundHandlerAdapter{
          */
         if (null != channel) {
             channel.close().awaitUninterruptibly();
-            //TODO 还有其它资源需要释放吗？
             this.exception = new IOException("connection closed");
             synchronized (channel) {
                 channel.notifyAll();
@@ -115,7 +117,10 @@ public class ConsumerConnection extends ChannelInboundHandlerAdapter{
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         /**连接成功的时候发送主题信息*/
-
+        if(subscribeMsg!=null){
+            ctx.writeAndFlush(subscribeMsg);
+        }
+//        super.channelActive(ctx);
     }
 
     @Override
@@ -129,6 +134,9 @@ public class ConsumerConnection extends ChannelInboundHandlerAdapter{
 //            /**得到返回的结果*/
 //            sendResult=(SendResult)msg;
 //        }
+        Message message=(Message)msg;
+//        System.out.println("consumer got msg:"+message.getMsgId());
+        listener.onMessage(message);
     }
 
     @Override

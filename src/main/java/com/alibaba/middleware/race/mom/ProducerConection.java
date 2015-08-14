@@ -6,9 +6,11 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+
 import com.alibaba.middleware.race.mom.encode.KryoDecoder;
 import com.alibaba.middleware.race.mom.encode.KryoEncoder;
 import com.alibaba.middleware.race.mom.encode.KryoPool;
+
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
@@ -20,7 +22,7 @@ import java.io.IOException;
 
 /**extends ChannelInboundHandlerAdapter 改成implements ChannelHandler？*/
 public class ProducerConection extends ChannelInboundHandlerAdapter{
-    private static String brokerIp = "127.0.0.1";
+    private static String brokerIp ;
     //TODO 设置为枚举类型
     public static final String TYPE="producer";
     public static final int PORT = 9999;
@@ -41,7 +43,6 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
 
 
     public SendResult sendMessage(Message message) throws Throwable{
-
         message = preProcessMsg(message);
         /**如果处于非连接状态*/
         if(!connected){
@@ -49,16 +50,15 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
         }
         /**发送Message*/
         ChannelFuture channelFuture = channel.writeAndFlush(message);
-        System.out.println("发送信息！！");
 
         /**阻塞线程直到写操作完成*/
-        if(!channelFuture.awaitUninterruptibly().isSuccess()){
-            close();
-        }
+//        if(!channelFuture.awaitUninterruptibly().isSuccess()){
+//            System.out.println("send失败");
+//            close();
+//        }
 
         /**因为是同步调用所以锁死线程*/
         waitForReponse();
-
         /**如果存在异常就抛出*/
         Throwable ex = exception;
         exception = null;
@@ -78,7 +78,7 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
             try{
                 channel.wait();
             }catch(InterruptedException e){
-
+                   e.printStackTrace();
             }
         }
     }
@@ -117,7 +117,7 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
         EventLoopGroup group = new NioEventLoopGroup();
         try{
             Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(group).channel(NioSocketChannel.class).remoteAddress("127.0.0.1",PORT)
+            bootstrap.group(group).channel(NioSocketChannel.class).remoteAddress(brokerIp,PORT)
                     .option(ChannelOption.TCP_NODELAY, true).handler(new ChannelInitializer<SocketChannel>() {
 
                 @Override
@@ -131,18 +131,17 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
             });
 
             ChannelFuture channelFuture = bootstrap.connect().sync();
-
+            
             /**不明白加这一步是什么意思 不知道该加不加*/
-//            f.channel().closeFuture().sync();
+            //阻塞线程直到channel close
+//            channelFuture.channel().closeFuture().sync();
             /***/
             if (!channelFuture.awaitUninterruptibly().isSuccess()){
                 throw new Exception("connect fail");
             }
 
-            channel = channelFuture.channel();
             connected = true;
-
-            System.out.println("Netty Client 连接成功！");
+            channel=channelFuture.channel();
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -185,7 +184,6 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         /**连接成功的时候发送主题信息*/
-
     }
 
     @Override
@@ -198,6 +196,7 @@ public class ProducerConection extends ChannelInboundHandlerAdapter{
             }
             /**得到返回的结果*/
             sendResult=(SendResult)msg;
+            System.out.println(sendResult);
         }
     }
 

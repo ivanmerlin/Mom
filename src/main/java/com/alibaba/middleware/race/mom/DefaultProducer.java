@@ -1,5 +1,7 @@
 package com.alibaba.middleware.race.mom;
 
+import com.alibaba.middleware.race.mom.broker.MessageCenter;
+
 
 /**
  * Created by ivan.wang on 2015/8/5.
@@ -14,10 +16,8 @@ public class DefaultProducer  implements Producer {
      */
 
     public void start() {
-        String brokerIp;
-        try {
-            brokerIp = System.getProperty("SIP");
-        }catch (Exception e) {
+        String brokerIp=System.getProperty("SIP");
+        if(brokerIp==null){
             brokerIp = "127.0.0.1";
         }
 
@@ -54,14 +54,18 @@ public class DefaultProducer  implements Producer {
      */
     public SendResult sendMessage(Message message) {
         message.setTopic(topic);
+        message.setMsgId(MessageCenter.generateId());
         message.setProperty("groupId",groupId);
+        message.setBornTime(System.currentTimeMillis());
         try {
             return producerConection.sendMessage(message);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
-
-        return null;
+        SendResult result=new SendResult();
+        result.setMsgId(message.getMsgId());
+        result.setStatus(SendStatus.FAIL);
+        return result;
     }
     /**
      * 异步callback发送消息，当前线程不阻塞。broker返回ack后，触发callback

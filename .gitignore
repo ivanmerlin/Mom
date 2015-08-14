@@ -42,7 +42,4 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-*.class
-target/classes/*.*
-target/test-classes/*.*
-
+.class

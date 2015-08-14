@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.alibaba.middleware.race</groupId>
-    <artifactId>middleware-mom-448</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>middleware-mom</artifactId>
+    <version>1.0</version>
     <dependencies>
         <dependency>
             <groupId>com.alibaba.race</groupId>

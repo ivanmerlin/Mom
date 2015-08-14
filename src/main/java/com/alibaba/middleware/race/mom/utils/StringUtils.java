@@ -16,6 +16,7 @@ public class StringUtils {
     public static boolean isNotBlank(String t){
         String s=t.replaceAll(" ","");
         System.out.println("s.equals(\"\") = " + s.equals(""));
+        s.trim();
         if(s==null || s.equals("") || s.equals(" "))
             return  false;
         return true;
